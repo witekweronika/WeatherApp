@@ -1,0 +1,874 @@
+/* ====================================================================== */
+/* index.css — uporządkowane style wg plików/komponentów */
+/* ====================================================================== */
+
+
+/* ---------------------------------------------- */
+/* GLOBAL — tokeny, reset, tło całej aplikacji */
+/* (używane wszędzie) */
+/* ---------------------------------------------- */
+
+/* Zmienne globalne (kolory, tło, akcenty, tokeny paneli) */
+:root {
+    /* Base */
+    --bg: #ffffff;          /* bazowe tło (fallback pod panoramy) */
+    --text: #000000;        /* bazowy kolor tekstu */
+
+    /* Navbar (legacy vars – jeśli gdzieś używasz) */
+    --nav-bg: #4b4b4b;
+    --nav-text: #ffffff;
+
+    /* Accent (blue) */
+    --accent: #7da2ff;      /* główny akcent */
+    --accent-soft: #a8c4ff; /* miękki akcent */
+    --accent-hover: #5b86ff;/* używane np. w .badge */
+
+    /* Inputs */
+    --input-bg: #a8c4ff;    /* tło inputów w auth */
+
+    /* Background image (panoramas) */
+    --app-bg-image: none;   /* CSS variable pod panoramę miasta */
+
+    /* Dashboard tokens */
+    --panel-bg: rgba(255, 255, 255, 0.72);
+    --panel-border: rgba(37, 99, 235, 0.18);
+    --panel-shadow: 0 14px 40px rgba(2, 6, 23, 0.18);
+    --scrim: rgba(2, 6, 23, 0.28); /* przyciemnienie tła pod dashboardem */
+}
+
+/* Tokeny dla trybu dark (aktywne gdy ustawisz data-theme="dark" na <html>) */
+:root[data-theme="dark"] {
+    --bg: #0b1220;
+    --text: #e5e7eb;
+
+    --panel-bg: rgba(2, 6, 23, 0.62);
+    --panel-border: rgba(96, 165, 250, 0.20);
+    --panel-shadow: 0 16px 44px rgba(0, 0, 0, 0.40);
+    --scrim: rgba(2, 6, 23, 0.48);
+}
+
+/* Reset box modelu */
+* { box-sizing: border-box; }
+
+/* Ujednolicenie wysokości */
+html, body { height: 100%; }
+
+/* TŁO APP: panorama siedzi na html (body transparent) — eliminuje “jasny pas” */
+html {
+    background-color: var(--bg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: var(--app-bg-image);
+    background-size: cover;
+    background-position: center;
+}
+
+/* Globalny font + kolor tekstu */
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: transparent;
+    color: var(--text);
+}
+
+
+/* ---------------------------------------------- */
+/* src/App.tsx + Layout (PublicLayout/UserLayout/AdminLayout) */
+/* (szkielet aplikacji: root + main) */
+/* ---------------------------------------------- */
+
+.app-root {
+    min-height: 100vh;          /* pełna wysokość okna */
+    display: flex;
+    flex-direction: column;     /* navbar u góry, reszta w main */
+    font-family: Arial, sans-serif;
+}
+
+.app-main {
+    flex: 1;                    /* main rośnie i wypełnia ekran */
+    padding: 0;                 /* auth ekrany centrują się same */
+}
+
+
+/* ---------------------------------------------- */
+/* src/components/Layout/*Layout.tsx — NAVBAR (globalny dla wszystkich layoutów) */
+/* (PublicLayout, UserLayout, AdminLayout) */
+/* ---------------------------------------------- */
+
+/* Navbar: tokeny + sticky + wygląd */
+.navbar {
+    --nb-bg: rgb(197, 208, 246);                 /* tło paska */
+    --nb-text: #141821;                         /* tekst */
+    --nb-muted: rgba(20, 24, 33, 0.68);         /* mniej ważny tekst */
+    --nb-border: rgba(20, 24, 33, 0.10);        /* linia pod spodem */
+    --nb-btn-bg: rgb(125, 162, 255);            /* tło pill button */
+    --nb-btn-hover: rgb(169, 196, 255);         /* hover pill button */
+    --nb-btn-border: rgba(20, 24, 33, 0.14);    /* obramowanie pill button */
+    --nb-shadow: 0 10px 26px rgba(20, 24, 33, 0.10);
+
+    position: sticky;           /* navbar przyklejony u góry */
+    top: 0;
+    z-index: 50;
+    height: 72px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--nb-bg);
+    border-bottom: 1px solid var(--nb-border);
+    box-shadow: var(--nb-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Dark navbar — tylko zmiana tokenów */
+html[data-theme="dark"] .navbar {
+    --nb-bg: rgba(11, 16, 32, 0.78);
+    --nb-text: #eef2ff;
+    --nb-muted: rgba(238, 242, 255, 0.72);
+    --nb-border: rgba(238, 242, 255, 0.14);
+    --nb-btn-bg: rgba(255, 255, 255, 0.06);
+    --nb-btn-hover: rgba(255, 255, 255, 0.10);
+    --nb-btn-border: rgba(238, 242, 255, 0.14);
+    --nb-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+/* Link-logo po lewej */
+.navbar .navbar__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--nb-text);
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+
+.navbar .navbar__logoIcon { font-size: 35px; }
+.navbar .navbar__logoText { font-size: 20px; }
+
+/* Prawa część paska (przyciski, email, itp.) */
+.navbar .navbar__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* “Pill button” — linki i buttony w navbarze */
+.navbar .navbar__pillBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--nb-btn-border);
+    background: var(--nb-btn-bg);
+    color: var(--nb-text);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.navbar .navbar__pillBtn:hover {
+    transform: translateY(-1px);
+    background: var(--nb-btn-hover);
+    box-shadow: 0 10px 20px rgba(20, 24, 33, 0.10);
+}
+
+html[data-theme="dark"] .navbar .navbar__pillBtn:hover {
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+}
+
+/* Mobile: ukryj tekst logo (zostaje ikonka) */
+@media (max-width: 560px) {
+    .navbar { padding: 0 12px; }
+    .navbar .navbar__logoText { display: none; }
+}
+
+
+/* ---------------------------------------------- */
+/* src/components/ThemeToggleButton.tsx */
+/* (przycisk “Dark/Light mode” w navbarze) */
+/* ---------------------------------------------- */
+
+/* Dodatkowy cień dla przycisku trybu (na bazie .navbar__pillBtn) */
+.themeBtn {
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.18);
+}
+
+/* Mocniejszy cień na hover */
+.themeBtn:hover {
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+}
+
+/* Disabled: brak animacji i interakcji */
+.themeBtn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ---------------------------------------------- */
+/* src/pages/Login.tsx + src/pages/Register.tsx */
+/* (ekrany autoryzacji) */
+/* ---------------------------------------------- */
+
+.auth-page {
+    min-height: calc(100vh - 72px);  /* wysokość minus navbar */
+    display: flex;
+    align-items: center;             /* pionowe centrowanie */
+    justify-content: center;         /* poziome centrowanie */
+    padding: 24px;
+}
+
+.auth-box {
+    width: 520px;
+    max-width: 92vw;
+    text-align: center;
+}
+
+.auth-title {
+    font-size: 40px;
+    font-weight: 500;
+    margin: 10px 0 34px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;                       /* odstępy między polami */
+}
+
+.auth-input {
+    width: 420px;
+    max-width: 90vw;
+    height: 54px;
+    border: none;
+    border-radius: 6px;
+    background: var(--input-bg);
+    outline: none;
+    text-align: center;
+    font-size: 20px;
+}
+
+.auth-input::placeholder {
+    color: #111;
+    opacity: 1;
+}
+
+.auth-submit {
+    width: 180px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: #111;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+/* ---------------------------------------------- */
+/* GLOBAL UI — komunikaty (używane na wielu stronach) */
+/* ---------------------------------------------- */
+
+.error {
+    margin-top: 14px;
+    color: #b91c1c;
+}
+
+.success {
+    margin-top: 14px;
+    color: #166534;
+}
+
+.muted {
+    opacity: 0.85; /* tekst pomocniczy / mniej ważny */
+}
+
+
+/* ---------------------------------------------- */
+/* src/components/CitySearch.tsx */
+/* (wyszukiwarka miasta w DashboardUser) */
+/* ---------------------------------------------- */
+
+.city-search {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Input: szerokość adaptacyjna + “glass” */
+.city-search input {
+    width: clamp(240px, 34vw, 520px);
+    height: 44px;
+
+    padding: 0 16px;
+    border-radius: 14px;
+
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    background: rgba(255, 255, 255, 0.86);
+
+    color: #111827;
+    font-size: 15px;
+    font-weight: 600;
+
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.city-search input::placeholder {
+    color: rgba(17, 24, 39, 0.55);
+    font-weight: 600;
+}
+
+/* Focus: podbicie border + ring */
+.city-search input:focus {
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 0 0 4px rgba(125, 162, 255, 0.25);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Button: styl jak navbar pills */
+.city-search button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--nb-btn-border, rgba(20, 24, 33, 0.14));
+    background: var(--nb-btn-bg, rgb(125, 162, 255));
+    color: var(--nb-text, #141821);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.city-search button:hover {
+    transform: translateY(-1px);
+    background: var(--nb-btn-hover, rgb(169, 196, 255));
+    box-shadow: 0 10px 20px rgba(20, 24, 33, 0.10);
+}
+
+.city-search button:active {
+    transform: translateY(0px);
+    box-shadow: 0 8px 16px rgba(20, 24, 33, 0.08);
+}
+
+/* Dark: button jak navbar w dark */
+html[data-theme="dark"] .city-search button {
+    border-color: var(--nb-btn-border, rgba(238, 242, 255, 0.14));
+    background: var(--nb-btn-bg, rgba(255, 255, 255, 0.06));
+    color: var(--nb-text, #eef2ff);
+}
+
+html[data-theme="dark"] .city-search button:hover {
+    background: var(--nb-btn-hover, rgba(255, 255, 255, 0.10));
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+}
+
+/* Dark: input (ciemne “glass”) */
+:root[data-theme="dark"] .city-search input {
+    background: rgba(2, 6, 23, 0.55);
+    border-color: rgba(96, 165, 250, 0.22);
+    color: rgba(238, 242, 255, 0.92);
+}
+
+:root[data-theme="dark"] .city-search input::placeholder {
+    color: rgba(238, 242, 255, 0.55);
+}
+
+:root[data-theme="dark"] .city-search input:focus {
+    border-color: rgba(96, 165, 250, 0.45);
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+    background: rgba(2, 6, 23, 0.68);
+}
+
+/* Mobile: input i button mogą się zawijać */
+@media (max-width: 700px) {
+    .city-search {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .city-search input {
+        width: min(520px, 100%);
+        flex: 1 1 260px;
+    }
+}
+
+
+/* ---------------------------------------------- */
+/* src/components/WeatherCard.tsx */
+/* (karta danych pogodowych — używana w Dashboard i HomePublic) */
+/* ---------------------------------------------- */
+
+/* Karta: układ w formie grid (odstępy między sekcjami) */
+.weather-card {
+    display: grid;
+    gap: 10px;
+}
+
+/* Header karty: tytuł + badge */
+.weather-card__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.weather-card__header h2 {
+    margin: 0;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+}
+
+/* Podstawowe linie tekstu */
+.weather-card__temp,
+.weather-card__desc {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.weather-card__temp {
+    font-weight: 800; /* podbicie temperatury */
+}
+
+.weather-card__desc {
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* Lista szczegółów (wilgotność/wiatr/odczuwalna itd.) */
+.weather-card__details {
+    margin: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 16px;
+    line-height: 1.35;
+    opacity: 0.92;
+}
+
+.weather-card__details span {
+    display: block;
+}
+
+/* Badge “Pełne dane” */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(180deg, var(--accent), var(--accent-hover));
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.22);
+}
+
+
+/* ---------------------------------------------- */
+/* src/pages/DashboardUser.tsx */
+/* (dashboard: panele, grid, metryki, wykres, KV) */
+/* ---------------------------------------------- */
+
+.dashboard {
+    position: relative;
+    padding: 22px clamp(14px, 3vw, 32px);
+    min-height: calc(100vh - 72px);
+}
+
+/* Scrim: przyciemnienie panoramy pod UI */
+.dashboard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--scrim);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Wszystko w dashboardzie ma być nad scrimem */
+.dashboard > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header dashboardu: tytuł (lewo), wyszukiwarka (środek), “rezerwa” (prawo) */
+.dashboard__header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.dashboard__title { grid-column: 1; }
+.dashboard__search {
+    grid-column: 2;
+    display: flex;
+    justify-content: center;
+}
+
+/* Pusta kolumna “po prawej” żeby środek był faktycznie środkiem */
+.dashboard__header::after {
+    content: "";
+    grid-column: 3;
+}
+
+.dashboard__h1 {
+    margin: 0;
+    font-size: 44px;
+    color: #5e62a8;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 14px rgba(2, 6, 23, 0.22);
+}
+
+.dashboard__subtitle {
+    margin: 6px 0 0;
+    font-size: 14px;
+    opacity: 0.92;
+    color: #5E62A8FF;
+}
+
+/* CitySearch: dopinamy centrowanie w gridzie */
+.dashboard__search .city-search {
+    margin: 0;
+    justify-content: center;
+}
+
+.dashboard__status { margin-bottom: 12px; }
+
+/* Główny układ: lewo (podsumowanie), środek (wykres), prawo (parametry) */
+.dashboard__grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(380px, 2fr) minmax(260px, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+/* Prawa kolumna: stack paneli */
+.dashboard__right {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Responsywność: tablet */
+@media (max-width: 1100px) {
+    .dashboard__grid { grid-template-columns: 1fr 1.2fr; }
+    .dashboard__right {
+        grid-column: 1 / -1;
+        flex-direction: row;
+    }
+    .dashboard__right .panel { flex: 1; }
+
+    .dashboard__header { grid-template-columns: 1fr auto; }
+    .dashboard__header::after { display: none; }
+}
+
+/* Responsywność: mobile */
+@media (max-width: 780px) {
+    .dashboard__grid { grid-template-columns: 1fr; }
+    .dashboard__right { flex-direction: column; }
+    .dashboard__h1 { font-size: 34px; }
+
+    .dashboard__header {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+    .dashboard__title { grid-column: 1; }
+    .dashboard__search {
+        grid-column: 1;
+        width: 100%;
+        justify-content: center;
+    }
+    .dashboard__search .city-search {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Panel “glass” — bazowy kontener dla sekcji */
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--panel-shadow);
+    backdrop-filter: blur(10px);
+}
+
+/* Header panelu */
+.panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+/* W panelu wykresu metryki są niżej, więc wyrównujemy do dołu */
+.panel__head--chart { align-items: flex-end; }
+
+.panel__title {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+}
+
+/* Key-Value (Parametry, Wiatr itd.) */
+.kv {
+    margin-top: 10px;
+    display: grid;
+    gap: 10px;
+}
+
+.kv__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(37, 99, 235, 0.07);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+.kv__row b { font-size: 15px; }
+
+/* Metryki nad wykresem (Teraz / Odczuwalna) */
+.metrics { display: flex; gap: 12px; }
+
+.metric {
+    text-align: right;
+    min-width: 110px;
+}
+
+.metric__value {
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.metric__label {
+    margin-top: 4px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Kontener wykresu Recharts */
+.chartBox {
+    width: 100%;
+    height: 280px;
+    margin-top: 12px;
+}
+
+/* Drobna notka pod wykresem */
+.note {
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+
+/* ---------------------------------------------- */
+/* src/pages/HomePublic.tsx */
+/* (publiczna strona “Warszawa tylko dla gościa”) */
+/* ---------------------------------------------- */
+
+.home-public-scope {
+    --hp-bg: #f6f7fb;
+    --hp-surface: #a9c4ff;
+    --hp-surface-2: #ccd8ff;
+    --hp-text: #121826;
+    --hp-muted: rgba(18, 24, 38, 0.70);
+    --hp-border: rgba(18, 24, 38, 0.12);
+    --hp-shadow: 0 12px 30px rgba(18, 24, 38, 0.12);
+    --hp-radius: 18px;
+    --hp-radius-inner: 16px;
+}
+
+/* Tło i centrowanie sekcji publicznej */
+.home-public-scope {
+    background: var(--hp-bg);
+    color: var(--hp-text);
+    min-height: calc(100vh - 72px);
+    padding: 36px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Karta “kontenerowa” strony */
+.home-public-scope .home-container {
+    width: 100%;
+    max-width: 980px;
+    padding: 34px 36px;
+    background: var(--hp-surface);
+    border: 1px solid var(--hp-border);
+    border-radius: var(--hp-radius);
+    box-shadow: var(--hp-shadow);
+    text-align: center;
+}
+
+/* Lead text */
+.home-public-scope .home-public__lead {
+    margin: 0 0 22px 0;
+    font-size: 14px;
+    line-height: 1.55;
+    letter-spacing: 0.2px;
+    color: var(--hp-muted);
+}
+
+/* Kontener pod WeatherCard */
+.home-public-scope .weather-container-home {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+}
+
+.home-public-scope .weather-card-container-home {
+    width: 100%;
+    max-width: 660px;
+    padding: 26px 24px;
+    background: var(--hp-surface-2);
+    border: 1px solid var(--hp-border);
+    border-radius: var(--hp-radius-inner);
+    box-shadow: none;
+}
+
+/* HomePublic: nadpiski typografii WeatherCard (żeby nie dziedziczyć “dashboardowego” ciężaru) */
+.home-public-scope .weather-card {
+    margin: 0;
+    text-align: center;
+}
+
+.home-public-scope .weather-card__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.home-public-scope .weather-card__header h2 {
+    margin: 0;
+    font-size: 44px;
+    line-height: 1.1;
+    letter-spacing: -0.6px;
+    color: var(--hp-text);
+}
+
+/* Ujednolicenie tekstu (bez globalnego “800” z dashboardu) */
+.home-public-scope .weather-card__temp,
+.home-public-scope .weather-card__desc,
+.home-public-scope .weather-card__details span {
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+.home-public-scope .weather-card__temp {
+    margin: 12px 0;
+    color: var(--hp-text);
+}
+
+.home-public-scope .weather-card__desc {
+    margin: 12px 0;
+    color: var(--hp-muted);
+}
+
+.home-public-scope .weather-card__details {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--hp-muted);
+}
+
+.home-public-scope .error {
+    margin-top: 10px;
+    color: #ff4d4f;
+}
+
+.home-public-scope p { margin: 0; }
+
+/* Mobile: ciaśniejsze paddingi + mniejszy nagłówek */
+@media (max-width: 720px) {
+    .home-public-scope .home-container {
+        padding: 26px 18px;
+        border-radius: 160px;
+    }
+
+    .home-public-scope .weather-card-container-home {
+        padding: 20px 16px;
+        border-radius: 14px;
+    }
+
+    .home-public-scope .weather-card__header h2 { font-size: 36px; }
+    .home-public-scope .home-public__lead { font-size: 13px; }
+}
+
+
+/* ---------------------------------------------- */
+/* LEGACY / NIEUŻYWANE (stare layouty/pojemniki) */
+/* jeśli już ich nie używasz, można bezpiecznie usunąć */
+/* ---------------------------------------------- */
+
+h1, h2 {
+    font-size: 1.8rem;
+    color: #333;
+}
+
+/* Stare kontenery (wygląda na poprzedni layout dashboardu) */
+.weather-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+}
+
+.card {
+    background-color: #ffd2b7;
+    padding: 30px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.weather-card-left {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    margin-left: 20px;
+}
+
+.weather-card-middle {
+    background-color: #ffd2b7;
+    padding: 10px;
+    border-radius: 10px;
+    width: 45%;
+}
+
+.weather-card-right {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    margin-right: 20px;
+}
